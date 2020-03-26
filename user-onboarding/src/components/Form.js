@@ -36,6 +36,7 @@ function Form() {
   });
 
   const [post, setPost] = useState([]);
+  const [users, setUsers] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
@@ -78,8 +79,13 @@ function Form() {
     axios
       .post("https://reqres.in/api/users", formData)
       .then(res => {
+        setUsers([
+          ...users,
+          res.data
+        ])
         setPost(res.data); // get just the form data from the REST api
         console.log("success", post);
+
         // reset form if successful
         setFormData({
           name: "",
@@ -156,6 +162,7 @@ function Form() {
             onChange={handleChange} 
           />
         </label>
+        <pre>{JSON.stringify(post, null, 2)}</pre>
         <button disabled={buttonDisabled}>Submit</button>
       </form>
     </div>
