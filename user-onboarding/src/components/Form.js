@@ -10,7 +10,13 @@ const formSchema = Yup.object().shape({
   email: Yup
     .string()
     .email("Must be a valid email address.")
-    .required("Must include email address.")
+    .required("Must include email address."),
+  password: Yup
+    .string()
+    .required('Password is required'),
+  terms: Yup
+    .boolean()
+    .oneOf([true], "please agree to terms of use"),
 });
 
 function Form() {
@@ -24,17 +30,39 @@ function Form() {
   const [errors, setErrors] = useState({
     name: '',
     email: '',
+    password: '',
     terms: ''
   });
 
   const [post, setPost] = useState([]);
 
-
-  const handleChange = (event) => {
-    setFormData({
+  const validateChange = event => {
+    Yup
+      .reach(formSchema, event.target.name)
+      .validate(event.target.value)
+      .then(valid => {
+        setErrors({
+          ...errors,
+          [event.target.name]: ""
+        });
+      })
+      .catch(err => {
+        setErrors({
+          ...errors,
+          [event.target.name]: err.errors[0]
+        });
+      });
+  };
+ 
+  const handleChange = event => {
+    event.persist();
+    const newFormData = {
       ...formData,
-      [event.target.name]: event.target.value
-    });
+      [event.target.name]:
+        event.target.type === "checkbox" ? event.target.checked : event.target.value
+    };
+    validateChange(event);
+    setFormData(newFormData);
   };
 
   const handleSubmit = (event) => {
@@ -45,6 +73,7 @@ function Form() {
       password: '',
       terms: ''
     });
+    console.log(formData)
   };
   
   return(
@@ -60,7 +89,12 @@ function Form() {
             onChange={handleChange} 
           />
         </label>
-        {/* {errors.name.length > 0 ? <p className="error">{errors.name}</p> : null} */}
+        {
+          errors.name.length > 0 ? 
+          <p className="error">{errors.name}</p> 
+          : 
+          null
+        }
         <label htmlFor='email'>
           Email: 
           <input 
@@ -86,7 +120,7 @@ function Form() {
           <input
             name="terms"
             type="checkbox"
-            checked={false}
+            checked={formData.terms}
             onChange={handleChange} 
           />
         </label>
