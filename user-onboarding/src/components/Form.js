@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as Yup from 'yup';
+import axios from 'axios';
 import './Form.css';
 
 // validating name and email with Yup
@@ -74,6 +75,20 @@ function Form() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    axios
+      .post("https://reqres.in/api/users", formData)
+      .then(res => {
+        setPost(res.data); // get just the form data from the REST api
+        console.log("success", post);
+        // reset form if successful
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          terms: ""
+        });
+      })
+      .catch(err => console.log(err.response));
     setFormData({ 
       name: '',
       email: '',
