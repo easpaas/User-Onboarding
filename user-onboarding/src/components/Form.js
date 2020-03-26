@@ -35,6 +35,13 @@ function Form() {
   });
 
   const [post, setPost] = useState([]);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+
+  useEffect(() => {
+    formSchema.isValid(formData).then(valid => {
+      setButtonDisabled(!valid);
+    });
+  }, [formData]);
 
   const validateChange = event => {
     Yup
@@ -73,7 +80,6 @@ function Form() {
       password: '',
       terms: ''
     });
-    console.log(formData)
   };
   
   return(
@@ -105,7 +111,12 @@ function Form() {
             onChange={handleChange} 
           />
         </label>
-        {/* TODO errors for email here */}
+        {
+          errors.name.length > 0 ? 
+          <p className="error">{errors.email}</p> 
+          : 
+          null
+        }
         <label htmlFor='password'>
           Password: 
           <input 
@@ -115,6 +126,12 @@ function Form() {
             onChange={handleChange} 
           />
         </label>
+        {
+          errors.name.length > 0 ? 
+          <p className="error">{errors.password}</p> 
+          : 
+          null
+        }
         <label htmlFor='terms'>
           Terms of Service:
           <input
@@ -124,10 +141,7 @@ function Form() {
             onChange={handleChange} 
           />
         </label>
-        <input 
-          type='submit' 
-          value='Submit' 
-        />
+        <button disabled={buttonDisabled}>Submit</button>
       </form>
     </div>
   );
